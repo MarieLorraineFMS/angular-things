@@ -1,7 +1,8 @@
 <input
+  class="form-control text-center"
   [type]="type"
   [name]="name"
-  [placeholder]="placeholder"
+  [placeholder]="placeholder || ''"
   [value]="value"
   [disabled]="disabled"
   (input)="handleInput($event)"

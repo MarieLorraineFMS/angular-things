@@ -1,75 +1,43 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { Trainings } from '../../models';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../ui/button/button.component';
-import { InputComponent } from '../../ui/input/input.component';
+import { TrainingService } from '../../services/training.service';
+import { CartService } from '../../services/cart.service';
+import { Training } from '../../models/training.model';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-trainings',
-  imports: [RouterModule, FormsModule, ButtonComponent, InputComponent],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './trainings.component.html',
   styleUrl: './trainings.component.scss',
 })
 export class TrainingsComponent implements OnInit {
-  listTrainings: Trainings | undefined;
+  private trainingService = inject(TrainingService);
+  private cartService = inject(CartService);
+  toastService = inject(ToastService);
+
+  allTrainings = signal<Training[]>([]);
+  searchTerm = signal('');
+
+  // State searchTerm() &  allTrainings().
+  // Si searchTerm() || allTrainings() change=>recalcul.
+  filteredTrainings = computed(() => {
+    const search = this.searchTerm().toLowerCase();
+    const stock = this.allTrainings();
+
+    return stock.filter((t) => t.name.toLowerCase().includes(search));
+  });
+
   ngOnInit(): void {
-    this.listTrainings = {
-      trainings: [
-        {
-          id: '1',
-          name: 'Angular Basics',
-          description: 'Learn the basics of Angular.',
-          price: 199,
-          quantity: 1,
-        },
-        {
-          id: '2',
-          name: 'Advanced TypeScript',
-          description: 'Deep dive into TypeScript features.',
-          price: 299,
-          quantity: 1,
-        },
-        {
-          id: '3',
-          name: 'Web Development',
-          description: 'Comprehensive web development course.',
-          price: 399,
-          quantity: 1,
-        },
-      ],
-    };
+    //Maj 'allTrainings'=>'computed' se réveille
+    const data = this.trainingService.getTrainings();
+    this.allTrainings.set(data);
   }
 
-  displayTrainingDetails(): void {
-    this.listTrainings = {
-      trainings: [
-        {
-          id: '1',
-          name: 'Angular Basics',
-          description: 'Learn the basics of Angular.',
-          price: 199,
-          quantity: 1,
-        },
-        {
-          id: '2',
-          name: 'Advanced TypeScript',
-          description: 'Deep dive into TypeScript features.',
-          price: 299,
-          quantity: 1,
-        },
-        {
-          id: '3',
-          name: 'Web Development',
-          description: 'Comprehensive web development course.',
-          price: 399,
-          quantity: 1,
-        },
-      ],
-    };
-  }
-
-  onAddToCart(training: any): void {
-    console.log(`Added to cart: ${training.name}, Quantity: ${training.quantity}`);
+  addToCart(t: Training) {
+    this.cartService.addToCart(t);
+    this.toastService.show(t.name + ' ajouté au panier !', 'success');
   }
 }

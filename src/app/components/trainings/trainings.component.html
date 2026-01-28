@@ -1,37 +1,48 @@
-<div class="container">
-  @if (listTrainings?.trainings?.length) {
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">NOM</th>
-          <th scope="col">DESCRIPTION</th>
-          <th scope="col">PRIX</th>
-          <th scope="col">QUANTITE</th>
-          <th scope="col">PANIER</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (training of listTrainings?.trainings; track training.id) {
-          <tr>
-            <td>{{ training.id }}</td>
-            <td>{{ training.name }}</td>
-            <td>{{ training.description }}</td>
-            <td>{{ training.price }}</td>
-            <td>
-              <ui-input
-                type="number"
-                name="quantity"
-                style="max-width: 60px"
-                [(ngModel)]="training.quantity"
-              />
-            </td>
-            <td>
-              <ui-button label="Ajouter" variant="primary" (pressed)="onAddToCart(training)" />
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+<div class="row mb-4">
+  <div class="col-md-6 mx-auto">
+    <div class="input-group">
+      <span class="input-group-text bg-white">🔍</span>
+      <input
+        type="text"
+        class="form-control border-start-0 shadow-none"
+        placeholder="Rechercher une formation..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  @for (t of filteredTrainings(); track t.id) {
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div
+          class="card-header bg-light d-flex justify-content-center align-items-center"
+          style="height: 120px"
+        >
+          <i [class]="'bi ' + t.icon" style="font-size: 4rem; color: #0d6efd"></i>
+        </div>
+
+        <div class="card-body text-center">
+          <h5 class="card-title text-primary fw-bold">{{ t.name }}</h5>
+          <p class="card-text text-muted small">{{ t.description }}</p>
+          <p class="h4 text-success">{{ t.price | currency: 'EUR' : 'symbol' : '1.2-2' }}</p>
+        </div>
+
+        <div class="card-footer bg-white border-0 pb-3">
+          <button (click)="addToCart(t)" class="btn btn-primary w-100 shadow-sm">
+            Ajouter au panier
+          </button>
+        </div>
+      </div>
+    </div>
+  } @empty {
+    <div class="text-center py-5">
+      <h3 class="text-muted">Aucun résultat pour "{{ searchTerm() }}"</h3>
+      <button (click)="searchTerm.set('')" class="btn btn-link text-decoration-none">
+        Effacer la recherche
+      </button>
+    </div>
   }
 </div>
