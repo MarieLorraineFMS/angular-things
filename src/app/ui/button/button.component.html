@@ -1,0 +1,24 @@
+<button
+  [class]="buttonClasses"
+  [disabled]="isDisabled"
+  [attr.type]="type"
+  [attr.aria-busy]="loading || null"
+  [attr.aria-label]="ariaLabel || (label ? null : 'Button')"
+  (click)="onClick($event)"
+>
+  <span class="ui-btn__slot ui-btn__slot--left">
+    <ng-content select="[slot=left]"></ng-content>
+  </span>
+
+  @if (label) {
+    <span class="ui-btn__label">{{ label }}</span>
+  }
+
+  <span class="ui-btn__slot ui-btn__slot--right">
+    <ng-content select="[slot=right]"></ng-content>
+  </span>
+
+  @if (loading) {
+    <span class="spinner-border spinner-border-sm ms-2" aria-hidden="true"></span>
+  }
+</button>
