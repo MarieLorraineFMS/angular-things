@@ -4,4 +4,6 @@ export interface Training {
   description: string;
   price: number;
   icon: string;
+  category: string;
+  quantity?: number;
 }

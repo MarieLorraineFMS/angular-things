@@ -5,6 +5,7 @@ import { TrainingService } from '../../services/training.service';
 import { CartService } from '../../services/cart.service';
 import { Training } from '../../models/training.model';
 import { ToastService } from '../../services/toast.service';
+import { FavoriteService } from '../../services/favorite.service';
 
 @Component({
   selector: 'app-trainings',
@@ -16,28 +17,75 @@ import { ToastService } from '../../services/toast.service';
 export class TrainingsComponent implements OnInit {
   private trainingService = inject(TrainingService);
   private cartService = inject(CartService);
+  private favoriteService = inject(FavoriteService);
+
   toastService = inject(ToastService);
 
   allTrainings = signal<Training[]>([]);
   searchTerm = signal('');
+  selectedCategory = signal('Toutes');
+  maxPrice = signal(3000);
+
+  // Category fabric
+  categories = computed(() => {
+    const cats = this.allTrainings().map((t) => t.category);
+    return ['Toutes', ...new Set(cats)];
+  });
+
+  highestPrice = computed(() => {
+    const prices = this.allTrainings().map((t) => t.price);
+    return prices.length > 0 ? Math.max(...prices) : 3000;
+  });
+  lowestPrice = computed(() => {
+    const prices = this.allTrainings().map((t) => t.price);
+    return prices.length > 0 ? Math.min(...prices) : 0;
+  });
 
   // State searchTerm() &  allTrainings().
-  // Si searchTerm() || allTrainings() change=>recalcul.
+  // Si searchTerm() || allTrainings()|| category changent=>recalcul.
   filteredTrainings = computed(() => {
     const search = this.searchTerm().toLowerCase();
-    const stock = this.allTrainings();
+    const cat = this.selectedCategory();
+    const limit = this.maxPrice();
 
-    return stock.filter((t) => t.name.toLowerCase().includes(search));
+    return this.allTrainings().filter((t) => {
+      const nameMatch = t.name.toLowerCase().includes(search);
+      const descMatch = t.description.toLowerCase().includes(search);
+      const catMatch = cat === 'Toutes' || t.category === cat;
+      const priceMatch = t.price <= limit;
+
+      return (nameMatch || descMatch) && catMatch && priceMatch;
+    });
   });
 
   ngOnInit(): void {
-    //Maj 'allTrainings'=>'computed' se réveille
-    const data = this.trainingService.getTrainings();
-    this.allTrainings.set(data);
+    // s'abonner au flux de données du service
+    this.trainingService.getTrainings().subscribe((data) => {
+      // 1. state allTrainings
+      this.allTrainings.set(data);
+
+      // 2. calcul maxPrice
+      if (data.length > 0) {
+        const max = Math.max(...data.map((t) => t.price));
+        this.maxPrice.set(max);
+      }
+    });
   }
 
   addToCart(t: Training) {
     this.cartService.addToCart(t);
     this.toastService.show(t.name + ' ajouté au panier !', 'success');
+  }
+
+  toggleFavorite(t: Training) {
+    this.favoriteService.toggleFavorite(t.id);
+    const isFav = this.favoriteService.isFavorite(t.id);
+    this.toastService.show(
+      t.name + (isFav ? ' ajouté aux favoris !' : ' retiré des favoris !'),
+      'success',
+    );
+  }
+  isFavorite(t: Training) {
+    return this.favoriteService.isFavorite(t.id);
   }
 }

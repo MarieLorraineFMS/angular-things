@@ -1,39 +1,20 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Training } from '../models/training.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import trainingsData from '../../assets/data/trainings.json';
 
 @Injectable({
   providedIn: 'root', // Dispo dans TOUTE l'app
 })
 export class TrainingService {
-  constructor() {}
+  private http = inject(HttpClient);
+  private apiUrl = 'https://api.ma-super-app.com/trainings';
+  private trainings = signal<Training[]>(trainingsData);
 
-  /**
-   * Retourne la liste des formations
-   * @return Training[]
-   */
-  getTrainings(): Training[] {
-    return [
-      {
-        id: 1,
-        name: 'Java',
-        price: 1500,
-        description: 'Maîtrisez le langage backend de référence.',
-        icon: 'bi-cup-hot',
-      },
-      {
-        id: 2,
-        name: 'Angular',
-        price: 1200,
-        description: 'Créez des applications web ultra-performantes.',
-        icon: 'bi-shield-check',
-      },
-      {
-        id: 3,
-        name: 'TypeScript',
-        price: 1000,
-        description: 'Le JavaScript avec des super-pouvoirs.',
-        icon: 'bi-filetype-tsx',
-      },
-    ];
+  // Simule un appel réseau
+  getTrainings(): Observable<Training[]> {
+    // Renvoie nos données locales dans un tuyau Observable
+    return of(trainingsData);
   }
 }
