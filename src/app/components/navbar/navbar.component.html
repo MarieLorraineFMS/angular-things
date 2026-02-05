@@ -1,0 +1,120 @@
+@if (toastService.message()) {
+  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 2000">
+    <div
+      class="toast show text-white border-0 shadow"
+      [ngClass]="toastService.type() === 'success' ? 'bg-success' : 'bg-danger'"
+    >
+      <div class="d-flex p-2">
+        <div class="toast-body fw-bold">
+          <i class="bi bi-info-circle-fill me-2"></i> {{ toastService.message() }}
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          (click)="toastService.message.set(null)"
+        ></button>
+      </div>
+    </div>
+  </div>
+}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow z-index-1000 sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" routerLink="/">SDF ACADEMY</a>
+
+    <div class="collapse navbar-collapse d-flex justify-content-between">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="trainings" routerLinkActive="active">Catalogue</a>
+        </li>
+
+        @if (authService.isAdmin()) {
+          <li class="nav-item">
+            <a class="nav-link text-warning fw-bold" routerLink="admin" routerLinkActive="active">
+              <i class="bi bi-shield-lock me-1"></i> Tableau de bord
+            </a>
+          </li>
+        }
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          @if (!authService.isAdmin()) {
+            <a routerLink="/favorites" class="nav-link position-relative me-3">
+              <i class="bi bi-heart fs-4 text-white"></i>
+              @if (favoriteService.count() > 0) {
+                <span
+                  class="badge rounded-pill bg-warning text-dark position-absolute cart-animate"
+                  [class.cart-animate]="favoriteService.isAnimate()"
+                  style="
+                    top: 20%;
+                    left: 120%;
+                    transform: translate(-50%, -50%);
+                    font-size: 0.65rem;
+                    padding: 0.35em 0.5em;
+                  "
+                >
+                  {{ favoriteService.count() }}
+                </span>
+              }
+            </a>
+
+            <a routerLink="/cart" class="nav-link position-relative px-2">
+              <i class="bi bi-cart3 fs-3 text-white"></i>
+              @if (cartService.cartCount() > 0) {
+                <span
+                  class="badge rounded-pill bg-danger position-absolute cart-animate"
+                  [class.cart-animate]="cartService.isAnimate()"
+                  style="
+                    top: 20%;
+                    left: 90%;
+                    transform: translate(-50%, -50%);
+                    font-size: 0.65rem;
+                    padding: 0.35em 0.5em;
+                  "
+                >
+                  {{ cartService.cartCount() }}
+                </span>
+              }
+            </a>
+          }
+
+          <div class="ms-2 ps-3 border-start border-secondary"></div>
+        </div>
+
+        <div class="ms-2 ps-3 border-start border-secondary">
+          @if (authService.currentUser(); as user) {
+            <div class="d-flex align-items-center">
+              <div class="text-end me-2 d-none d-sm-block">
+                <div class="text-white small fw-bold">{{ user.pseudo }}</div>
+                <div class="text-muted" style="font-size: 0.7rem">Connecté</div>
+              </div>
+              <img
+                [src]="user.avatar"
+                class="rounded-circle border border-2 border-primary"
+                width="38"
+                height="38"
+              />
+              <button
+                (click)="authService.logout()"
+                class="btn btn-danger btn-sm ms-3"
+                title="Déconnexion"
+              >
+                <i class="bi bi-box-arrow-left"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="d-flex gap-2">
+              <a routerLink="/register" class="btn btn-outline-light rounded-pill px-3 shadow-sm">
+                <i class="bi bi-person-add me-1"></i> S'inscrire
+              </a>
+              <a routerLink="/login" class="btn btn-primary rounded-pill px-3 shadow-sm">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Connexion
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

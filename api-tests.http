@@ -1,0 +1,21 @@
+### Récupérer toutes les formations
+GET http://localhost:3000/trainings
+
+### Récupérer une formation par ID
+GET http://localhost:3000/trainings/2
+
+### Ajouter une nouvelle formation
+POST http://localhost:3000/trainings
+Content-Type: application/json
+
+{
+  "name": "Sortilèges de déploiement",
+  "description": "Envoyez votre code sur le nuage sans orage.",
+  "price": 890,
+  "category": "Magie Noire"
+}
+
+###
+
+### Supprimer une formation
+DELETE http://localhost:3000/trainings/1

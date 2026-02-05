@@ -1,0 +1,170 @@
+<div class="container mt-4">
+  <div class="d-flex align-items-center mb-4">
+    <div class="bg-primary text-white rounded-circle p-3 me-3 shadow">
+      <i class="bi bi-shield-lock fs-3"></i>
+    </div>
+    <h2 class="fw-bold m-0">SDF Dashboard</h2>
+  </div>
+
+  <div
+    class="card mb-5 border-0 shadow-sm"
+    [class.bg-warning-subtle]="isEditing()"
+    [class.bg-light]="!isEditing()"
+  >
+    <div class="card-body p-4">
+      <h5 class="card-title mb-4 fw-bold text-dark">
+        <i class="bi" [ngClass]="isEditing() ? 'bi-pencil-square' : 'bi-plus-circle-fill'"></i>
+        {{ isEditing() ? ' Modifier la formation' : ' Ajouter une nouvelle formation' }}
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary">Nom de la formation</label>
+          <input
+            type="text"
+            [(ngModel)]="currentTraining.name"
+            class="form-control shadow-sm"
+            placeholder="ex: Angular Expert"
+          />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label small fw-bold text-secondary">Prix (€)</label>
+          <input type="number" [(ngModel)]="currentTraining.price" class="form-control shadow-sm" />
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary">Catégorie</label>
+          <select [(ngModel)]="currentTraining.category" class="form-select shadow-sm">
+            @for (cat of catService.list(); track cat.id) {
+              <option [value]="cat.name">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-secondary">Description courte</label>
+          <input
+            type="text"
+            [(ngModel)]="currentTraining.description"
+            class="form-control shadow-sm"
+            placeholder="En quelques mots..."
+          />
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-5">
+            <div class="card border-0 shadow-sm bg-white h-100">
+              <div class="card-header bg-dark text-white fw-bold">
+                <i class="bi bi-tags me-2"></i>Liste des Catégories
+              </div>
+              <div class="card-body">
+                <div class="input-group mb-3">
+                  <input type="text" #newCat class="form-control" placeholder="Nouvelle..." />
+                  <button
+                    (click)="catService.addCategory(newCat.value); newCat.value = ''"
+                    class="btn btn-primary"
+                  >
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+
+                <ul class="list-group list-group-flush">
+                  @for (cat of catService.list(); track cat.id) {
+                    <li
+                      class="list-group-item d-flex justify-content-between align-items-center px-0"
+                    >
+                      <span>{{ cat.name }}</span>
+                      <div class="btn-group">
+                        <button
+                          (click)="renameCat(cat)"
+                          class="btn btn-sm btn-outline-secondary border-0"
+                        >
+                          <i class="bi bi-pencil small"></i>
+                        </button>
+                        <button
+                          (click)="deleteCat(cat)"
+                          class="btn btn-sm btn-outline-danger border-0"
+                        >
+                          <i class="bi bi-x-lg small"></i>
+                        </button>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 text-end mt-4">
+          @if (isEditing()) {
+            <button (click)="resetForm()" class="btn btn-outline-secondary me-2 px-4 rounded-pill">
+              <i class="bi bi-x-circle me-1"></i> Annuler
+            </button>
+          }
+          <button
+            (click)="saveTraining()"
+            [disabled]="
+              !currentTraining.name || !currentTraining.price || !currentTraining.category
+            "
+            [class]="isEditing() ? 'btn btn-warning text-dark' : 'btn btn-success'"
+            class="px-5 fw-bold rounded-pill shadow"
+          >
+            {{ isEditing() ? 'Enregistrer les modifications' : 'Créer la formation' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-dark text-white">
+          <tr>
+            <th class="ps-4">Formation</th>
+            <th>Catégorie</th>
+            <th>Prix</th>
+            <th class="text-center pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white">
+          @for (t of trainings(); track t.id) {
+            <tr>
+              <td class="ps-4">
+                <div class="fw-bold text-primary">{{ t.name }}</div>
+                <div class="text-muted small text-truncate" style="max-width: 300px">
+                  {{ t.description }}
+                </div>
+              </td>
+              <td>
+                <span class="badge rounded-pill bg-light text-dark border border-secondary-subtle">
+                  {{ t.category }}
+                </span>
+              </td>
+              <td class="fw-bold">{{ t.price | currency: 'EUR' : 'symbol' : '1.2-2' }}</td>
+              <td class="text-center pe-4">
+                <div class="btn-group shadow-sm">
+                  <button (click)="editTraining(t)" class="btn btn-outline-primary btn-sm px-3">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button (click)="deleteTraining(t.id)" class="btn btn-outline-danger btn-sm px-3">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                Aucune formation disponible.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

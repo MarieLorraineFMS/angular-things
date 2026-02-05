@@ -1,8 +1,12 @@
-import { Injectable, signal, computed, effect, afterNextRender } from '@angular/core';
+import { Injectable, signal, computed, effect, inject, PLATFORM_ID } from '@angular/core';
 import { Training } from '../models/training.model';
+import { AuthService } from './auth.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
+  private auth = inject(AuthService);
+  private platformId = inject(PLATFORM_ID); // Verif browser
   private cart = signal<Training[]>([]);
   isAnimate = signal(false);
 
@@ -15,24 +19,30 @@ export class CartService {
     this.cart().reduce((acc, item) => acc + item.price * (item.quantity || 1), 0),
   );
   constructor() {
-    // 1. set localstorage à chaque modif
     effect(() => {
-      const currentCart = this.cart();
-      // set si on a recup le browser & loaded
-      if (typeof window !== 'undefined' && this.isLoaded) {
-        localStorage.setItem('mon_panier', JSON.stringify(currentCart));
+      const user = this.auth.currentUser();
+      const isBrowser = isPlatformBrowser(this.platformId);
+
+      // Si un utilisateur se connecte
+      if (isBrowser && user) {
+        const saved = localStorage.getItem(`panier_user_${user.id}`);
+        this.cart.set(saved ? JSON.parse(saved) : []);
+        this.isLoaded = true;
+      }
+      // Si l'utilisateur se déco, on vide l'affichage du panier
+      else if (isBrowser && !user) {
+        this.cart.set([]);
+        this.isLoaded = false;
       }
     });
-
-    // 2. get localstorage au démarrage
-    afterNextRender(() => {
-      const saved = localStorage.getItem('mon_panier');
-      if (saved) {
-        // On remplit le panier avec les vieux trucs
-        this.cart.set(JSON.parse(saved));
+    // set localstorage à chaque modif
+    effect(() => {
+      const currentCart = this.cart();
+      const user = this.auth.currentUser();
+      const isBrowser = isPlatformBrowser(this.platformId);
+      if (isBrowser && this.isLoaded && user) {
+        localStorage.setItem(`panier_user_${user.id}`, JSON.stringify(currentCart));
       }
-      // ready for next modifs
-      this.isLoaded = true;
     });
   }
 
@@ -57,7 +67,7 @@ export class CartService {
     setTimeout(() => this.isAnimate.set(false), 300);
   }
 
-  updateQuantity(trainingId: number, change: number) {
+  updateQuantity(trainingId: string, change: number) {
     this.cart.update((items) => {
       return items.map((item) => {
         if (item.id === trainingId) {
@@ -76,5 +86,9 @@ export class CartService {
 
   clearCart() {
     this.cart.set([]);
+    const user = this.auth.currentUser();
+    if (isPlatformBrowser(this.platformId) && user) {
+      localStorage.removeItem(`panier_user_${user.id}`);
+    }
   }
 }

@@ -1,0 +1,71 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow border-0">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4 fw-bold">Rejoindre SDF Academy</h2>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Nom</label>
+              <input
+                type="text"
+                formControlName="lastName"
+                class="form-control"
+                placeholder="Votre nom"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Prénom</label>
+              <input
+                type="text"
+                formControlName="firstName"
+                class="form-control"
+                placeholder="Votre prénom"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Pseudo</label>
+              <input
+                type="text"
+                formControlName="pseudo"
+                class="form-control"
+                placeholder="Votre pseudo"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control"
+                [class.is-invalid]="
+                  registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+                "
+              />
+              <div class="invalid-feedback">Veuillez entrer un email valide (ex: test@test.fr)</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Mot de passe</label>
+              <input type="password" formControlName="password" class="form-control" />
+            </div>
+
+            <button
+              type="submit"
+              [disabled]="registerForm.invalid"
+              class="btn btn-primary w-100 py-2 fw-bold"
+            >
+              S'inscrire
+            </button>
+          </form>
+
+          <p class="text-center mt-3 small">
+            Déjà membre ? <a routerLink="/login">Connectez-vous</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

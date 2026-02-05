@@ -6,7 +6,7 @@
           <input
             type="text"
             class="form-control"
-            placeholder="Chercher un sortilège..."
+            placeholder="Rechercher..."
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
           />
@@ -18,16 +18,17 @@
             [ngModel]="selectedCategory()"
             (ngModelChange)="selectedCategory.set($event)"
           >
-            @for (c of categories(); track c) {
-              <option [value]="c">{{ c }}</option>
+            <option value="Toutes">Toutes les catégories</option>
+            @for (c of catService.list(); track c.id) {
+              <option [value]="c.name">{{ c.name }}</option>
             }
           </select>
         </div>
 
         <div class="col-md-4">
-          <label class="form-label small"
-            >Budget : entre {{ lowestPrice() }}€ et {{ maxPrice() }}€</label
-          >
+          <label class="form-label small">
+            Budget : entre {{ lowestPrice() }}€ et {{ maxPrice() }}€
+          </label>
           <input
             type="range"
             class="form-range"
@@ -51,23 +52,35 @@
           class="card-header bg-light d-flex justify-content-center align-items-center"
           style="height: 120px"
         >
-          <i [class]="'bi ' + t.icon" style="font-size: 4rem; color: #0d6efd"></i>
+          @if (t.icon && t.icon.includes('bi')) {
+            <i [class]="'bi ' + t.icon" style="font-size: 4rem; color: #0d6efd"></i>
+          } @else if (t.icon) {
+            <i [class]="'fa-solid ' + t.icon + ' fa-4x'" style="color: #0d6efd"></i>
+          } @else {
+            <i class="bi bi-question-circle" style="font-size: 4rem; color: #6c757d"></i>
+          }
         </div>
 
-        <div class="card-body text-center">
+        <div class="card-body text-center d-flex flex-column">
           <h5 class="card-title text-primary fw-bold">{{ t.name }}</h5>
-          <button (click)="toggleFavorite(t)" class="btn btn-link p-0 border-0 text-danger">
-            <i class="bi" [ngClass]="isFavorite(t) ? 'bi-heart-fill' : 'bi-heart'"></i>
-          </button>
-          <p class="card-text text-muted small">{{ t.description }}</p>
-          <p class="h4 text-success">{{ t.price | currency: 'EUR' : 'symbol' : '1.2-2' }}</p>
+
+          @if (authService.currentUser() && !authService.isAdmin()) {
+            <button (click)="toggleFavorite(t)" class="btn btn-link p-0 border-0 text-danger mb-2">
+              <i class="bi" [ngClass]="isFavorite(t) ? 'bi-heart-fill' : 'bi-heart'"></i>
+            </button>
+          }
+
+          <p class="card-text text-muted small flex-grow-1">{{ t.description }}</p>
+          <p class="h4 text-success mt-2">{{ t.price | currency: 'EUR' : 'symbol' : '1.2-2' }}</p>
         </div>
 
-        <div class="card-footer bg-white border-0 pb-3">
-          <button (click)="addToCart(t)" class="btn btn-primary w-100 shadow-sm">
-            Ajouter au panier
-          </button>
-        </div>
+        @if (authService.currentUser() && !authService.isAdmin()) {
+          <div class="card-footer bg-white border-0 pb-3">
+            <button (click)="addToCart(t)" class="btn btn-primary w-100 shadow-sm">
+              <i class="bi bi-cart-plus me-2"></i> Ajouter au panier
+            </button>
+          </div>
+        }
       </div>
     </div>
   } @empty {

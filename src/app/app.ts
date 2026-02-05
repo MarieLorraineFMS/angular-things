@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CartService } from './services/cart.service';
 import { ToastService } from './services/toast.service';
 import { FavoriteService } from './services/favorite.service';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, CommonModule, NavbarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

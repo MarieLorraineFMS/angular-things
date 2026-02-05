@@ -1,0 +1,41 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">Connexion</h2>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control"
+                [class.is-invalid]="
+                  loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+                "
+              />
+              <div class="invalid-feedback">Veuillez entrer une adresse email valide.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Mot de passe</label>
+              <input type="password" formControlName="password" class="form-control" />
+            </div>
+
+            @if (errorMsg()) {
+              <div class="alert alert-danger py-2 small">
+                {{ errorMsg() }}
+              </div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100 mt-3" [disabled]="loginForm.invalid">
+              Se connecter
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

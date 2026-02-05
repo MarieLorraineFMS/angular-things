@@ -6,6 +6,8 @@ import { CartService } from '../../services/cart.service';
 import { Training } from '../../models/training.model';
 import { ToastService } from '../../services/toast.service';
 import { FavoriteService } from '../../services/favorite.service';
+import { AuthService } from '../../services/auth.service';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-trainings',
@@ -15,9 +17,11 @@ import { FavoriteService } from '../../services/favorite.service';
   styleUrl: './trainings.component.scss',
 })
 export class TrainingsComponent implements OnInit {
+  public authService = inject(AuthService);
   private trainingService = inject(TrainingService);
   private cartService = inject(CartService);
   private favoriteService = inject(FavoriteService);
+  public catService = inject(CategoryService);
 
   toastService = inject(ToastService);
 

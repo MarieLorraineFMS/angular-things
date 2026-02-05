@@ -5,6 +5,7 @@ import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast.service';
 import { Training } from '../../models/training.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -15,6 +16,7 @@ import { Training } from '../../models/training.model';
 })
 export class CartComponent {
   cartService = inject(CartService);
+  authService = inject(AuthService);
   router = inject(Router); //  State page après la commande
   toastService = inject(ToastService);
 
@@ -26,9 +28,8 @@ export class CartComponent {
 
   // Infos client
   customer = {
-    name: '',
-    email: '',
-    address: '',
+    name: this.authService.currentUser()?.pseudo || '',
+    email: this.authService.currentUser()?.email || '',
   };
 
   // Filtre panier

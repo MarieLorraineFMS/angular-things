@@ -1,0 +1,125 @@
+{
+  "trainings": [
+    {
+      "id": "1",
+      "name": "Domptage de Bugs Sauvages",
+      "description": "Apprenez à capturer les erreurs 404 dans la nature sans vous faire mordre.",
+      "price": 450,
+      "category": "Inclassable",
+      "icon": "bi-bug"
+    },
+    {
+      "id": "2",
+      "name": "Sortilèges CSS Avancés",
+      "description": "Centrer une div sans invoquer de démons. Garanti sans larmes.",
+      "price": 1200,
+      "category": "Inclassable",
+      "icon": "bi-magic"
+    },
+    {
+      "id": "3",
+      "name": "Alchimie du LocalStorage",
+      "description": "Transformez vos variables volatiles en or pur qui survit au F5.",
+      "price": 800,
+      "category": "Alchimie",
+      "icon": "bi-gem"
+    },
+    {
+      "id": "4",
+      "name": "Murmure à l'oreille des Signals",
+      "description": "Parlez couramment le langage de la réactivité sans crier.",
+      "price": 1500,
+      "category": "Inclassable",
+      "icon": "bi-broadcast"
+    },
+    {
+      "id": "5",
+      "name": "Yoga pour Développeurs Autistes",
+      "description": "Comment rester zen quand le point-virgule manque à l'appel.",
+      "price": 50,
+      "category": "Bien-être",
+      "icon": "bi-puzzle"
+    },
+    {
+      "id": "6",
+      "name": "Nécromancie de Code Hérité",
+      "description": "Réanimer un vieux projet de 2010 sans faire exploser le serveur.",
+      "price": 2500,
+      "category": "Inclassable",
+      "icon": "fa-skull"
+    },
+    {
+      "id": "7",
+      "name": "Tisane de Console.log",
+      "description": "Infusion de messages de débogage pour nuits blanches sereines.",
+      "price": 25,
+      "category": "Bien-être",
+      "icon": "bi-cup-hot"
+    },
+    {
+      "id": "d0a0",
+      "name": "Sortilèges de déploiement",
+      "description": "Envoyez votre code sur le nuage sans orage.",
+      "price": 890,
+      "category": "Inclassable",
+      "icon": "fa-hat-wizard"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "firstName": "Moi",
+      "lastName": "Même",
+      "pseudo": "Admin",
+      "email": "test@test.fr",
+      "password": "MTIzNA==",
+      "userRoles": [
+        "USER",
+        "ADMIN"
+      ],
+      "avatar": "https://i.pravatar.cc/150"
+    },
+    {
+      "id": "2",
+      "firstName": "Toi",
+      "lastName": "Même",
+      "pseudo": "!Admin",
+      "email": "test2@test.fr",
+      "password": "MTIzNA==",
+      "userRoles": [
+        "USER"
+      ],
+      "avatar": "https://i.pravatar.cc/150"
+    },
+    {
+      "id": "9ae6",
+      "lastName": "Même",
+      "firstName": "Toi",
+      "pseudo": "ToiMeme",
+      "email": "test3@test.fr",
+      "password": "MTIzNA==",
+      "avatar": "https://i.pravatar.cc/150",
+      "userRoles": [
+        "USER"
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": "2",
+      "name": "Magie Noire"
+    },
+    {
+      "id": "3",
+      "name": "Inclassable"
+    },
+    {
+      "id": "4",
+      "name": "Alchimie"
+    },
+    {
+      "id": "5",
+      "name": "Bien-être"
+    }
+  ]
+}
