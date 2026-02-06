@@ -1,145 +1,177 @@
-<h2 class="mb-4">Votre Panier</h2>
+<div class="container py-5">
+  <div class="d-flex align-items-center mb-4">
+    <mat-icon class="me-2 text-primary fs-1" style="width: auto; height: auto"
+      >shopping_basket</mat-icon
+    >
+    <h2 class="mb-0 fw-bold">Votre Inventaire</h2>
+  </div>
 
-<div class="card shadow border-0">
-  <div class="card-body">
-    <div class="mb-3">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Rechercher dans mon panier..."
-        [ngModel]="searchTerm()"
-        (ngModelChange)="searchTerm.set($event)"
-      />
-    </div>
-    <table class="table align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Formation</th>
-          <th class="text-center">Quantité</th>
-          <th class="text-center">Catégorie</th>
-          <th class="text-end">Prix</th>
-          <th class="text-center">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of filteredItems(); track item.id; let i = $index) {
-          <tr>
-            <td>
-              <span class="fw-bold">{{ item.name }}</span
-              ><br />
-              <small class="text-muted">Réf: #{{ item.id }}</small>
-            </td>
+  <div class="row g-4">
+    <div [class]="showOrderForm() ? 'col-lg-7' : 'col-lg-12'">
+      <mat-card class="shadow-sm border-0 overflow-hidden">
+        <div class="p-3 bg-light border-bottom">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>Chercher...</mat-label>
+            <input matInput [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
 
-            <td class="text-center">
-              <div class="d-flex justify-content-center align-items-center">
-                <button
-                  (click)="cartService.updateQuantity(item.id, -1)"
-                  class="btn btn-sm btn-outline-secondary py-0 px-2"
-                >
-                  -
-                </button>
-                <span class="mx-2 fw-bold">{{ item.quantity || 1 }}</span>
-                <button
-                  (click)="cartService.updateQuantity(item.id, 1)"
-                  class="btn btn-sm btn-outline-secondary py-0 px-2"
-                >
-                  +
-                </button>
-              </div>
-            </td>
+        <mat-card-content class="p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0 custom-table">
+              <thead class="bg-light text-muted small text-uppercase">
+                <tr>
+                  <th class="ps-4">Formation</th>
+                  <th class="text-center">Quantité</th>
+                  <th class="text-end">Sous-total</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of filteredItems(); track item.id; let i = $index) {
+                  <tr class="cart-row">
+                    <td class="ps-4 py-3">
+                      <div class="fw-bold text-primary">{{ item.name }}</div>
+                      <span class="badge rounded-pill bg-light text-dark border small">{{
+                        item.category
+                      }}</span>
+                    </td>
+                    <td class="text-center">
+                      <div class="quantity-control d-inline-flex align-items-center shadow-sm">
+                        <button mat-icon-button (click)="cartService.updateQuantity(item.id, -1)">
+                          <mat-icon>remove</mat-icon>
+                        </button>
+                        <span class="mx-2 fw-bold">{{ item.quantity || 1 }}</span>
+                        <button mat-icon-button (click)="cartService.updateQuantity(item.id, 1)">
+                          <mat-icon>add</mat-icon>
+                        </button>
+                      </div>
+                    </td>
+                    <td class="text-end fw-bold text-primary px-3">
+                      {{ item.price * (item.quantity || 1) | currency: 'EUR' }}
+                    </td>
+                    <td class="text-center">
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="cartService.removeFromCart(i)"
+                        title="Supprimer"
+                        class="delete-btn"
+                      >
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="text-center py-5">
+                      <mat-icon class="display-1 text-muted opacity-25">shopping_cart_off</mat-icon>
+                      <p class="text-muted mt-3">Votre sac est vide...</p>
+                      <button mat-flat-button color="primary" routerLink="/trainings">
+                        Retourner au catalogue
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
 
-            <td class="text-center text-primary fw-bold">{{ item.category }}</td>
-            <td class="text-end text-primary fw-bold">{{ item.price * (item.quantity || 1) }} €</td>
-
-            <td class="text-center">
-              <button
-                (click)="cartService.removeFromCart(i)"
-                class="btn btn-outline-danger btn-sm border-0"
-                title="Supprimer l'article"
-              >
-                <i class="bi bi-trash3-fill"></i>
-              </button>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="5" class="text-center py-5">
-              <div class="text-muted mb-3">Votre panier est vide</div>
-              <a routerLink="/trainings" class="btn btn-sm btn-outline-primary"
-                >Retour au catalogue</a
-              >
-            </td>
-          </tr>
+        @if (items().length > 0) {
+          <mat-card-footer
+            class="p-4 bg-light border-top d-flex justify-content-between align-items-center"
+          >
+            <div class="text-muted">Total de la transaction :</div>
+            <div class="h3 mb-0 fw-bold text-danger">
+              {{ cartService.totalAmount() | currency: 'EUR' }}
+            </div>
+          </mat-card-footer>
         }
-      </tbody>
-      @if (items().length > 0) {
-        <tfoot>
-          <tr>
-            <td colspan="3" class="text-end fw-bold">TOTAL :</td>
-            <td class="text-end h4 text-success fw-bold">{{ cartService.totalAmount() }} €</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      }
-    </table>
+      </mat-card>
 
-    @if (items().length > 0) {
-      <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-        <a routerLink="/trainings" class="btn btn-link text-decoration-none text-secondary"
-          >← Continuer</a
-        >
-
-        @if (!showOrderForm()) {
+      @if (items().length > 0 && !showOrderForm()) {
+        <div class="d-flex justify-content-between mt-4">
+          <button mat-button routerLink="/trainings">← Continuer mes achats</button>
           <div>
-            <button (click)="cartService.clearCart()" class="btn btn-outline-danger me-2">
-              Vider le panier
+            <button mat-stroked-button color="warn" class="me-2" (click)="cartService.clearCart()">
+              Vider le sac
             </button>
-            <button (click)="showOrderForm.set(true)" class="btn btn-primary shadow-sm">
+            <button filled mat-raised-button color="primary" (click)="showOrderForm.set(true)">
               Passer à la caisse
             </button>
           </div>
-        }
-      </div>
-    }
+        </div>
+      }
+    </div>
 
     @if (showOrderForm()) {
-      <div class="card mt-4 border-primary bg-light">
-        <div class="card-body">
-          <h5 class="text-primary mb-3">Vos coordonnées</h5>
-          <form #orderForm="ngForm" (ngSubmit)="onOrder()">
-            <div class="mb-3">
-              <label class="form-label">Nom</label>
-              <input
-                type="text"
-                name="name"
-                class="form-control"
-                [(ngModel)]="customer.name"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input
-                type="email"
-                name="email"
-                class="form-control"
-                [(ngModel)]="customer.email"
-                required
-                email
-              />
-            </div>
-            <button type="submit" [disabled]="orderForm.invalid" class="btn btn-success w-100">
-              Confirmer la commande
-            </button>
-            <button
-              type="button"
-              (click)="showOrderForm.set(false)"
-              class="btn btn-link w-100 text-muted mt-2"
-            >
-              Retour au panier
-            </button>
-          </form>
-        </div>
+      <div class="col-lg-5">
+        <mat-card class="shadow border-primary-top">
+          <mat-card-header class="bg-primary text-white p-3 rounded-top">
+            <mat-card-title>Commande</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="pt-4 px-4 pb-2">
+            <form #orderForm="ngForm" (ngSubmit)="onOrder()" class="custom-form">
+              <mat-form-field appearance="fill" class="w-100 mb-2">
+                <mat-label>Votre Nom</mat-label>
+                <input matInput name="name" [(ngModel)]="customer.fullName" required />
+                <mat-icon matPrefix class="me-2">person</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-100 mb-2">
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  type="email"
+                  name="email"
+                  [(ngModel)]="customer.email"
+                  required
+                  email
+                />
+                <mat-icon matPrefix class="me-2">alternate_email</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-100 mb-2">
+                <mat-label>Adresse de votre demeure</mat-label>
+                <textarea
+                  matInput
+                  name="address"
+                  [(ngModel)]="customer.address"
+                  required
+                  rows="3"
+                ></textarea>
+                <mat-icon matPrefix class="me-2">home</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-100 mb-3">
+                <mat-label>Le zéro six</mat-label>
+                <input matInput type="tel" name="phone" [(ngModel)]="customer.phone" required />
+                <mat-icon matPrefix class="me-2">phone</mat-icon>
+              </mat-form-field>
+
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="orderForm.invalid"
+                class="w-100 py-3 fs-5 mb-2"
+              >
+                Valider ({{ cartService.totalAmount() }} €)
+              </button>
+
+              <button
+                mat-button
+                type="button"
+                (click)="showOrderForm.set(false)"
+                class="w-100 text-muted"
+              >
+                Modifier mon sac
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
       </div>
     }
   </div>

@@ -1,0 +1,89 @@
+.fav-btn {
+  display: block !important;
+  margin: 0 auto 1rem auto;
+
+  mat-icon {
+    color: #e91e63;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+/* On force une lisibilité parfaite pour tes aventuriers */
+.training-card {
+  /* Le Titre : On le veut fier et bien visible */
+  mat-card-title {
+    color: var(--mat-sys-primary) !important; /* Utilise ton Magenta du thème */
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* La Description : On remplace le gris "muted" par quelque chose de plus soutenu */
+  p.text-muted {
+    color: #2c3e50 !important; /* Un bleu-noir profond, beaucoup plus lisible */
+    line-height: 1.5; /* On aère le texte pour le confort visuel */
+    font-weight: 400;
+  }
+
+  /* Le Prix : On le fait ressortir comme un trésor */
+  .price-badge .text-success {
+    color: #27ae60 !important; /* Un vert émeraude plus riche */
+    font-size: 1.6rem;
+  }
+}
+
+/* On harmonise aussi les icônes de catégorie */
+.card-header-icon i {
+  /* On s'assure que l'icône principale pète bien aux yeux */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Le bouton de favoris au milieu */
+.fav-btn {
+  display: block !important;
+  margin: 0 auto 0.5rem auto;
+  color: #e91e63 !important; /* Un beau rouge magenta */
+}
+
+/* On crée une classe "ombrelle" qui uniformise tous les types d'icônes */
+.icon-render {
+  /* Taille fixe pour tout le monde */
+  font-size: 3.5rem !important;
+  width: auto;
+  height: auto;
+  line-height: 1;
+
+  color: var(--mat-sys-primary);
+
+  /* Aura magique */
+  filter: drop-shadow(0 0 8px rgba(var(--mat-sys-primary-rgb), 0.2));
+  transition: all 0.3s ease;
+
+  /*mat-icons*/
+  &.mat-icon {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.training-card:hover .icon-render {
+  transform: scale(1.15) rotate(5deg);
+  color: var(--mat-sys-tertiary);
+}
+
+.icon-render {
+  font-size: 3.5rem !important;
+  color: var(--mat-sys-primary);
+  filter: drop-shadow(0 0 8px rgba(var(--mat-sys-primary-rgb), 0.2));
+
+  &.mat-icon {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

@@ -1,92 +1,98 @@
-<div class="row mb-4">
-  <div class="col-md-6 mx-auto">
-    <div class="card p-3 mb-4 shadow-sm border-0 bg-light">
-      <div class="row g-3">
+<div class="row mb-5">
+  <div class="col-md-10 mx-auto">
+    <mat-card class="p-4 shadow-sm border-0 bg-light">
+      <div class="row g-4 align-items-center">
         <div class="col-md-4">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Rechercher..."
-            [ngModel]="searchTerm()"
-            (ngModelChange)="searchTerm.set($event)"
-          />
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Rechercher...</mat-label>
+            <input
+              matInput
+              [ngModel]="searchTerm()"
+              (ngModelChange)="searchTerm.set($event)"
+              placeholder="Ex: Chakra, Andúril..."
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
         </div>
 
         <div class="col-md-4">
-          <select
-            class="form-select"
-            [ngModel]="selectedCategory()"
-            (ngModelChange)="selectedCategory.set($event)"
-          >
-            <option value="Toutes">Toutes les catégories</option>
-            @for (c of catService.list(); track c.id) {
-              <option [value]="c.name">{{ c.name }}</option>
-            }
-          </select>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Catégorie</mat-label>
+            <mat-select
+              [ngModel]="selectedCategory()"
+              (ngModelChange)="selectedCategory.set($event)"
+            >
+              <mat-option value="Toutes">Toutes</mat-option>
+              @for (c of catService.list(); track c.id) {
+                <mat-option [value]="c.name">{{ c.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div class="col-md-4">
-          <label class="form-label small">
-            Budget : entre {{ lowestPrice() }}€ et {{ maxPrice() }}€
+          <label class="small text-muted mb-2 d-block">
+            Budget : {{ lowestPrice() }}€ - {{ maxPrice() }}€
           </label>
-          <input
-            type="range"
-            class="form-range"
-            [min]="lowestPrice()"
-            [max]="highestPrice()"
-            step="1"
-            [ngModel]="maxPrice()"
-            (ngModelChange)="maxPrice.set($event)"
-          />
+          <mat-slider [min]="lowestPrice()" [max]="highestPrice()" step="1" class="w-100">
+            <input matSliderThumb [ngModel]="maxPrice()" (ngModelChange)="maxPrice.set($event)" />
+          </mat-slider>
         </div>
       </div>
-    </div>
+    </mat-card>
   </div>
 </div>
 
 <div class="row">
   @for (t of filteredTrainings(); track t.id) {
     <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm border-0">
+      <mat-card class="h-100 shadow border-0 training-card">
         <div
-          class="card-header bg-light d-flex justify-content-center align-items-center"
-          style="height: 120px"
+          class="card-header-icon d-flex justify-content-center align-items-center py-4 bg-light"
         >
-          @if (t.icon && t.icon.includes('bi')) {
-            <i [class]="'bi ' + t.icon" style="font-size: 4rem; color: #0d6efd"></i>
-          } @else if (t.icon) {
-            <i [class]="'fa-solid ' + t.icon + ' fa-4x'" style="color: #0d6efd"></i>
+          @if (t.icon) {
+            @if (t.icon.startsWith('bi-')) {
+              <i [class]="'bi ' + t.icon" class="icon-render"></i>
+            } @else if (t.icon.startsWith('fa-')) {
+              <i [class]="'fa-solid ' + t.icon" class="icon-render"></i>
+            } @else {
+              <mat-icon class="icon-render">{{ t.icon }}</mat-icon>
+            }
           } @else {
-            <i class="bi bi-question-circle" style="font-size: 4rem; color: #6c757d"></i>
+            <mat-icon class="icon-render fallback-star">{{ t.icon }}</mat-icon>
           }
         </div>
 
-        <div class="card-body text-center d-flex flex-column">
-          <h5 class="card-title text-primary fw-bold">{{ t.name }}</h5>
+        <mat-card-content class="text-center pt-3 d-flex flex-column flex-grow-1">
+          <mat-card-title class="text-primary fw-bold mb-2">{{ t.name }}</mat-card-title>
 
           @if (authService.currentUser() && !authService.isAdmin()) {
-            <button (click)="toggleFavorite(t)" class="btn btn-link p-0 border-0 text-danger mb-2">
-              <i class="bi" [ngClass]="isFavorite(t) ? 'bi-heart-fill' : 'bi-heart'"></i>
+            <button mat-icon-button color="warn" (click)="toggleFavorite(t)" class="fav-btn">
+              <mat-icon>{{ isFavorite(t) ? 'favorite' : 'favorite_border' }}</mat-icon>
             </button>
           }
 
-          <p class="card-text text-muted small flex-grow-1">{{ t.description }}</p>
-          <p class="h4 text-success mt-2">{{ t.price | currency: 'EUR' : 'symbol' : '1.2-2' }}</p>
-        </div>
+          <p class="text-muted small flex-grow-1 px-2">{{ t.description }}</p>
+
+          <div class="price-badge mt-3">
+            <span class="h4 text-danger fw-bold">{{ t.price | currency: 'EUR' }}</span>
+          </div>
+        </mat-card-content>
 
         @if (authService.currentUser() && !authService.isAdmin()) {
-          <div class="card-footer bg-white border-0 pb-3">
-            <button (click)="addToCart(t)" class="btn btn-primary w-100 shadow-sm">
-              <i class="bi bi-cart-plus me-2"></i> Ajouter au panier
+          <mat-card-actions class="pb-3 px-3">
+            <button matFab extended color="primary" class="w-100 py-2" (click)="addToCart(t)">
+              <mat-icon>add_shopping_cart</mat-icon> Ajouter au panier
             </button>
-          </div>
+          </mat-card-actions>
         }
-      </div>
+      </mat-card>
     </div>
   } @empty {
     <div class="text-center py-5">
-      <h3 class="text-muted">Aucun résultat pour "{{ searchTerm() }}"</h3>
-      <button (click)="searchTerm.set('')" class="btn btn-link text-decoration-none">
+      <mat-icon class="display-1 text-muted">search_off</mat-icon>
+      <h3 class="text-muted mt-3">Aucune formation trouvée pour "{{ searchTerm() }}"</h3>
+      <button matFab extended color="primary" (click)="searchTerm.set('')">
         Effacer la recherche
       </button>
     </div>

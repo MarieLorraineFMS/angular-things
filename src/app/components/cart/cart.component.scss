@@ -1,0 +1,55 @@
+.border-primary-top {
+  border-top: 5px solid var(--mat-sys-primary) !important;
+}
+
+.custom-table {
+  .cart-row {
+    transition: background 0.2s ease;
+    &:hover {
+      background-color: rgba(var(--mat-sys-primary-rgb), 0.02);
+    }
+  }
+}
+
+.quantity-control {
+  background: #fff;
+  border-radius: 50px;
+  border: 1px solid #dee2e6;
+  padding: 2px;
+
+  button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    mat-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.custom-form {
+  mat-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: white !important;
+    }
+  }
+}
+
+/* On enlève l'espace sous les champs de recherche pour gagner de la place */
+.hide-subscript .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* On cible spécifiquement notre petit bouton de suppression */
+.delete-btn {
+  /* On s'assure que le rouge est bien présent même sans le survol */
+  color: #f44336 !important;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    /* Au survol, il s'illumine comme une braise */
+    background-color: rgba(244, 67, 54, 0.1) !important;
+    transform: scale(1.2) rotate(10deg);
+    color: #d32f2f !important;
+  }
+}

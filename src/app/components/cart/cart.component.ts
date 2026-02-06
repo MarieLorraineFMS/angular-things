@@ -6,11 +6,31 @@ import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast.service';
 import { Training } from '../../models/training.model';
 import { AuthService } from '../../services/auth.service';
+import { Customer } from '../../models/customer.model';
+import { ApiService } from '../../services/api.service';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSliderModule } from '@angular/material/slider';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSliderModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
 })
@@ -19,6 +39,7 @@ export class CartComponent {
   authService = inject(AuthService);
   router = inject(Router); //  State page après la commande
   toastService = inject(ToastService);
+  private api = inject(ApiService);
 
   // Check state via cartService
   items = this.cartService.getCart();
@@ -26,10 +47,14 @@ export class CartComponent {
   showOrderForm = signal(false);
   searchTerm = signal('');
 
+  private currentUser = this.authService.currentUser();
+
   // Infos client
-  customer = {
-    name: this.authService.currentUser()?.pseudo || '',
-    email: this.authService.currentUser()?.email || '',
+  customer: Customer = {
+    email: this.currentUser?.email || '',
+    fullName: this.currentUser?.firstName + ' ' + this.currentUser?.lastName || '',
+    address: '',
+    phone: '',
   };
 
   // Filtre panier
@@ -48,7 +73,26 @@ export class CartComponent {
   }
 
   onOrder() {
-    const customerName = this.customer.name;
+    const customerName = this.customer.fullName;
+    const order = {
+      customer: this.customer,
+      items: this.cartService.getCart()(),
+      total: this.cartService.totalAmount(),
+      date: new Date().toISOString(),
+    };
+    this.api.post('orders', order).subscribe(() => {
+      this.toastService.show(
+        `Merci ${this.customer.fullName} ! Commande n°${Math.floor(Math.random() * 1000)} enregistrée.`,
+        'success',
+      );
+
+      this.cartService.clearCart();
+      this.showOrderForm.set(false);
+
+      setTimeout(() => {
+        this.router.navigate(['/trainings']);
+      }, 2000);
+    });
 
     // 1.ToastService
     this.toastService.show(`Merci ${customerName} ! Votre commande est validée.`, 'success');

@@ -1,0 +1,22 @@
+.icon-render {
+  /* Taille fixe pour tout le monde */
+  font-size: 3.5rem !important;
+  width: auto;
+  height: auto;
+  line-height: 1;
+
+  color: var(--mat-sys-primary);
+
+  /* Aura magique */
+  filter: drop-shadow(0 0 8px rgba(var(--mat-sys-primary-rgb), 0.2));
+  transition: all 0.3s ease;
+
+  /*mat-icons*/
+  &.mat-icon {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
